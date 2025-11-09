@@ -39,7 +39,7 @@ jobs:
         run: mvn jacoco:check
 
       - name: Upload JaCoCo Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
@@ -54,3 +54,6 @@ jobs:
         uses: semgrep/semgrep-action@v1
         with:
           config: auto
+        env:
+          SEMGREP_RULES: "auto"
+          SEMGREP_BASELINE_REF: main
