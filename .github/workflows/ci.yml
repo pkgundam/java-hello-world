@@ -13,23 +13,32 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Set up JDK 11
+      - name: Set up JDK 21
         uses: actions/setup-java@v3
         with:
-          java-version: '11'
+          java-version: '21'
           distribution: 'temurin'
           cache: maven
 
       - name: Build with Maven
-        run: mvn clean install
+        run: mvn clean compile
 
-      - name: Run Checkstyle
+      - name: Run Checkstyle and Generate Report
+        run: mvn checkstyle:checkstyle
+
+      - name: Run Checkstyle Check
         run: mvn checkstyle:check
 
-      - name: Run PMD
+      - name: Run PMD and Generate Report
+        run: mvn pmd:pmd
+
+      - name: Run PMD Check
         run: mvn pmd:check
 
-      - name: Run SpotBugs
+      - name: Run SpotBugs and Generate Report
+        run: mvn spotbugs:spotbugs
+
+      - name: Run SpotBugs Check
         run: mvn spotbugs:check
 
       - name: Run Tests and Generate JaCoCo Report
@@ -39,10 +48,34 @@ jobs:
         run: mvn jacoco:check
 
       - name: Upload JaCoCo Coverage Report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: target/site/jacoco/
+
+      - name: Upload Checkstyle Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkstyle-report
+          path: target/checkstyle-result.xml
+
+      - name: Upload PMD Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-report
+          path: target/pmd.xml
+
+      - name: Upload SpotBugs Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: spotbugs-report
+          path: target/spotbugsXml.xml
+
+      - name: Upload Surefire Test Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: target/surefire-reports/
 
   semgrep:
     runs-on: ubuntu-latest
